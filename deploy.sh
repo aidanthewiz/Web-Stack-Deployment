@@ -64,15 +64,13 @@ lemp () {
     wget https://www.modpagespeed.com/release_archive/${NPS_VERSION}/psol-${NPS_VERSION}-x64.tar.gz --directory-prefix=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable/
     tar -xzvf /usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable/psol-${NPS_VERSION}-x64.tar.gz --directory=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable/
     # Pagespeed END
-    (cd /usr/local/src/nginx-${NGINX_VERSION}/ && ./configure --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_geoip_module=dynamic --with-http_gunzip_module --with-http_gzip_static_module --with-http_sub_module --with-http_xslt_module=dynamic --with-stream=dynamic --with-stream_ssl_module --with-mail=dynamic --with-mail_ssl_module --add-module=/usr/local/src/ngx_brotli --add-module=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable --sbin-path=/usr/sbin/nginx)
+    (cd /usr/local/src/nginx-${NGINX_VERSION}/ && ./configure --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/run/nginx.pid --prefix=/usr/share/nginx --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-threads --with-pcre-jit --with-http_v2_module --with-http_ssl_module --with-stream=dynamic --with-stream_ssl_module --with-mail=dynamic --with-mail_ssl_module --add-module=/usr/local/src/ngx_brotli --add-module=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable)
     make --directory=/usr/local/src/nginx-${NGINX_VERSION}/
     make install --directory=/usr/local/src/nginx-${NGINX_VERSION}/
     apt-mark hold nginx*
     mkdir -p /var/lib/nginx/{body,fastcgi}
     mkdir /var/cache/ngx_pagespeed/
     chown root:root /var/cache/ngx_pagespeed/
-    apt update
-    apt full-upgrade -y
     systemctl unmask nginx
     systemctl enable nginx.service
     ufw allow 'Nginx Full'
