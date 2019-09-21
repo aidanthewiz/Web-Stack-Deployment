@@ -37,6 +37,7 @@ select yn in "Yes" "No"; do
         read new_hostname
         # Preform trim on input
         read -rd '' new_hostname <<< "{$new_hostname}"
+        echo $new_hostname
         hostnamectl set-hostname $new_hostname
         break
     ;;
@@ -74,6 +75,14 @@ lemp () {
     systemctl unmask nginx
     systemctl enable nginx.service
     ufw allow 'Nginx Full'
+    openssl dhparam -out /etc/nginx/certs/dhparam.pem 4096
+    wget https://dl.eff.org/certbot-auto
+    mv certbot-auto /usr/local/bin/certbot-auto
+    chown root /usr/local/bin/certbot-auto
+    chmod 0755 /usr/local/bin/certbot-auto
+    
+
+
 }
 
 lamp () {
