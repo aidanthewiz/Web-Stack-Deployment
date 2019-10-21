@@ -70,6 +70,7 @@ lemp () {
     make install --directory=/usr/local/src/nginx-${NGINX_VERSION}/
     apt-mark hold nginx*
     mkdir -p /var/lib/nginx/{body,fastcgi}
+    mkdir /etc/nginx/conf
     mkdir -p /var/www/_letsencrypt
     chown www-data /var/www/_letsencrypt
     mkdir /var/cache/ngx_pagespeed/
@@ -79,17 +80,17 @@ lemp () {
     ufw allow 'Nginx Full'
     openssl dhparam -out /etc/nginx/conf/dhparam.pem 4096
     pip install certbot-nginx
-    cp -r conf /etc/nginx/
+    cp -r conf/* /etc/nginx/conf
     echo "What domains would you like to set up?"
     echo "Form: 'DOMAIN.TLD DOMAIN.TLD ...'"
     read domains
     # Preform trim on input
     read -rd '' domains <<< "$domains"
     arr=($domains)
-    certbotDomains = ""
+    certbotDomains=''
     for i in "${arr[@]}"
     do
-        certbotDomains += " -d " + i
+        $certbotDomains+=' -d '+i
         cp /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
         sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
         sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
