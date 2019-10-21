@@ -52,9 +52,9 @@ lemp () {
     add-apt-repository ppa:certbot/certbot -y
     apt update
     apt full-upgrade -y
-    apt install build-essential nginx checkinstall libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.3-fpm php7.3-opcache php7.3-common php7.3-cli php7.3-gd php7.3-zip php7.3-mbstring php7.3-xml php7.3-xmlrpc php7.3-soap php7.3-mysql php7.3-curl -y
+    apt install build-essential nginx python-pip checkinstall libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.3-fpm php7.3-common php7.3-cli php7.3-gd php7.3-zip php7.3-mbstring php7.3-xml php7.3-xmlrpc php7.3-soap php7.3-intl php7.3-mysql php7.3-curl composer -y
     apt remove *nginx* -y
-    NGINX_VERSION=1.16.0
+    NGINX_VERSION=1.16.1
     wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz --directory-prefix=/usr/local/src/
     tar -xzvf /usr/local/src/nginx-* --directory=/usr/local/src/
     git clone --recursive https://github.com/google/ngx_brotli.git /usr/local/src/ngx_brotli
@@ -70,35 +70,47 @@ lemp () {
     make install --directory=/usr/local/src/nginx-${NGINX_VERSION}/
     apt-mark hold nginx*
     mkdir -p /var/lib/nginx/{body,fastcgi}
+    mkdir -p /var/www/_letsencrypt
+    chown www-data /var/www/_letsencrypt
     mkdir /var/cache/ngx_pagespeed/
     chown root:root /var/cache/ngx_pagespeed/
     systemctl unmask nginx
     systemctl enable nginx.service
     ufw allow 'Nginx Full'
-    openssl dhparam -out /etc/nginx/certs/dhparam.pem 4096
-    wget https://dl.eff.org/certbot-auto
-    mv certbot-auto /usr/local/bin/certbot-auto
-    chown root /usr/local/bin/certbot-auto
-    chmod 0755 /usr/local/bin/certbot-auto
-    
-
-
-}
-
-lamp () {
-    echo "lamp"
+    openssl dhparam -out /etc/nginx/conf/dhparam.pem 4096
+    pip install certbot-nginx
+    cp -r conf /etc/nginx/
+    echo "What domains would you like to set up?"
+    echo "Form: 'DOMAIN.TLD DOMAIN.TLD ...'"
+    read domains
+    # Preform trim on input
+    read -rd '' domains <<< "$domains"
+    arr=($domains)
+    certbotDomains = ""
+    for i in "${arr[@]}"
+    do
+        certbotDomains += " -d " + i
+        cp /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
+        sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
+        sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
+    done
+    echo "What email would you like to use for certbot?"
+    read certbotEmail
+    # Preform trim on input
+    read -rd '' certbotEmail <<< "$certbotEmail"
+    certbot certonly --webroot $certbotDomains --email $certbotEmail -w /var/www/_letsencrypt -n --agree-tos --force-renewal
+    nginx -t && systemctl reload nginx
+    echo -e '#!/bin/bash\nnginx -t && systemctl reload nginx' | sudo tee /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
+    chmod a+x /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
+    nginx -t && systemctl reload nginx
 }
 
 # Ask what server stack the user wants to set up.
 echo "What server stack would you like to configure?"
-select stack in "LEMP" "LAMP"; do
+select stack in "LEMP"; do
     case $stack in
     LEMP)
         lemp;
-        break
-    ;;
-    LAMP)
-        lamp;
         break
     ;;
     esac
