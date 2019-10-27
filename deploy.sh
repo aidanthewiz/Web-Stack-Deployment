@@ -80,7 +80,7 @@ lemp () {
     ufw allow 'Nginx Full'
     openssl dhparam -out /etc/nginx/conf/dhparam.pem 4096
     pip install certbot-nginx
-    cp -r conf/* /etc/nginx/conf
+    cp -rf conf/* /etc/nginx/conf
     echo "What domains would you like to set up?"
     echo "Form: 'DOMAIN.TLD DOMAIN.TLD ...'"
     read domains
@@ -91,10 +91,10 @@ lemp () {
     for i in "${arr[@]}"
     do
         certbotDomains+=' -d '$i
-        cp /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
+        cp -rf /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
         sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
         sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
-        ln -s /etc/nginx/sites-available/$i /etc/nginx/sites-enabled/
+        ln -sf /etc/nginx/sites-available/$i /etc/nginx/sites-enabled/
     done
     rm /etc/nginx/sites-available/default && rm /etc/nginx/sites-enabled/default
     echo "What email would you like to use for certbot?"
