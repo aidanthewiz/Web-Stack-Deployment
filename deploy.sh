@@ -94,13 +94,15 @@ lemp () {
         cp /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
         sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
         sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
+        ln -s /etc/nginx/sites-available/$i /etc/nginx/sites-enabled/
     done
+    rm /etc/nginx/sites-available/default && rm /etc/nginx/sites-enabled/default
     echo "What email would you like to use for certbot?"
     read certbotEmail
     # Preform trim on input
     read -rd '' certbotEmail <<< "$certbotEmail"
     certbot certonly --webroot $certbotDomains --email $certbotEmail -w /var/www/_letsencrypt -n --agree-tos --force-renewal
-    nginx -t && systemctl reload nginx
+    nginx -t && systemctl start nginx
     echo -e '#!/bin/bash\nnginx -t && systemctl reload nginx' | sudo tee /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
     chmod a+x /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
     nginx -t && systemctl reload nginx
