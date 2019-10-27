@@ -90,7 +90,7 @@ lemp () {
     certbotDomains=""
     for i in "${arr[@]}"
     do
-        certbotDomains+=' -d '+$i
+        certbotDomains+=' -d '$i
         cp /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
         sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
         sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
