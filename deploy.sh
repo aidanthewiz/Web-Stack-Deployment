@@ -12,7 +12,7 @@ fi
 # Update and Full Upgrade before configuration
 apt update
 apt full-upgrade -y
-apt autoremove
+apt autoremove -y
 
 # Ask to enable firewall and allow OpenSSH
 echo "Would you like to enable ufw (firewall) and allow OpenSSH?"
@@ -53,7 +53,7 @@ lemp () {
     add-apt-repository ppa:certbot/certbot -y
     apt update
     apt full-upgrade -y
-    apt install build-essential nginx python-pip checkinstall libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.3-fpm php7.3-common php7.3-cli php7.3-gd php7.3-zip php7.3-mbstring php7.3-xml php7.3-xmlrpc php7.3-soap php7.3-intl php7.3-mysql php7.3-curl composer -y
+    apt install build-essential nginx certbot checkinstall libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.3-fpm php7.3-common php7.3-cli php7.3-gd php7.3-zip php7.3-mbstring php7.3-xml php7.3-xmlrpc php7.3-soap php7.3-intl php7.3-mysql php7.3-curl composer -y
     apt remove *nginx* -y
     NGINX_VERSION=1.16.1
     wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz --directory-prefix=/usr/local/src/
@@ -80,7 +80,6 @@ lemp () {
     systemctl enable nginx.service
     ufw allow 'Nginx Full'
     openssl dhparam -out /etc/nginx/conf/dhparam.pem 3072
-    pip install certbot-nginx
     cp -rf conf/* /etc/nginx/conf
     echo "What domains would you like to set up?"
     echo "Form: 'DOMAIN.TLD DOMAIN.TLD ...'"
