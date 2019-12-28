@@ -12,6 +12,7 @@ fi
 # Update and Full Upgrade before configuration
 apt update
 apt full-upgrade -y
+apt autoremove
 
 # Ask to enable firewall and allow OpenSSH
 echo "Would you like to enable ufw (firewall) and allow OpenSSH?"
@@ -105,7 +106,7 @@ lemp () {
     certbot certonly --webroot $certbotDomains --email $certbotEmail -w /var/www/_letsencrypt -n --agree-tos --force-renewal
     for i in "${arr[@]}"
     do
-        sed -i -r 's/#?;#//g' /etc/nginx/sites-available/
+        sed -i -r 's/#?;#//g' /etc/nginx/sites-available/$i
     done
     nginx -t && systemctl start nginx
     echo -e '#!/bin/bash\nnginx -t && systemctl reload nginx' | sudo tee /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
