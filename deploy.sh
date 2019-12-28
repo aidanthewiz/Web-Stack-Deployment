@@ -102,6 +102,7 @@ lemp () {
     read certbotEmail
     # Preform trim on input
     read -rd '' certbotEmail <<< "$certbotEmail"
+    service nginx start
     certbot certonly --webroot $certbotDomains --email $certbotEmail -w /var/www/_letsencrypt -n --agree-tos --force-renewal
     for i in "${arr[@]}"
     do
