@@ -81,6 +81,7 @@ lemp () {
     ufw allow 'Nginx Full'
     openssl dhparam -out /etc/nginx/conf/dhparam.pem 3072
     cp -rf conf/* /etc/nginx/conf
+    mv /etc/nginx/conf/nginx.conf /etc/nginx/
     echo "What domains would you like to set up?"
     echo "Form: 'DOMAIN.TLD DOMAIN.TLD ...'"
     read domains
