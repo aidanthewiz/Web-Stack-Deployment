@@ -74,11 +74,11 @@ lemp () {
     mkdir -p /var/www/_letsencrypt
     chown www-data /var/www/_letsencrypt
     mkdir /var/cache/ngx_pagespeed/
-    chown root:root /var/cache/ngx_pagespeed/
+    chown www-data:www-data /var/cache/ngx_pagespeed/
     systemctl unmask nginx
     systemctl enable nginx.service
     ufw allow 'Nginx Full'
-    openssl dhparam -out /etc/nginx/conf/dhparam.pem 4096
+    openssl dhparam -out /etc/nginx/conf/dhparam.pem 3072
     pip install certbot-nginx
     cp -rf conf/* /etc/nginx/conf
     echo "What domains would you like to set up?"
@@ -95,6 +95,7 @@ lemp () {
         sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
         sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
         ln -sf /etc/nginx/sites-available/$i /etc/nginx/sites-enabled/
+        sed -i -r 's/(listen .*443)/\1;#/g; s/(ssl_(certificate|certificate_key|trusted_certificate) )/#;#\1/g' /etc/nginx/sites-available/$i
     done
     rm /etc/nginx/sites-available/default && rm /etc/nginx/sites-enabled/default
     echo "What email would you like to use for certbot?"
@@ -102,6 +103,10 @@ lemp () {
     # Preform trim on input
     read -rd '' certbotEmail <<< "$certbotEmail"
     certbot certonly --webroot $certbotDomains --email $certbotEmail -w /var/www/_letsencrypt -n --agree-tos --force-renewal
+    for i in "${arr[@]}"
+    do
+        sed -i -r 's/#?;#//g' /etc/nginx/sites-available/
+    done
     nginx -t && systemctl start nginx
     echo -e '#!/bin/bash\nnginx -t && systemctl reload nginx' | sudo tee /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
     chmod a+x /etc/letsencrypt/renewal-hooks/post/nginx-reload.sh
