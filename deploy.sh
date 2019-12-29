@@ -95,6 +95,8 @@ lemp () {
         cp -rf /etc/nginx/conf/vhost.conf.bak /etc/nginx/sites-available/$i
         sed -i "s|{DOMAIN}|${i%%.*}|g" /etc/nginx/sites-available/$i
         sed -i "s|{TLD}|${i#*.}|g" /etc/nginx/sites-available/$i
+        sed -i "s|{CERT_DOMAIN}|${arr[0]%%.*}|g" /etc/nginx/sites-available/$i
+        sed -i "s|{CERT_TLD}|${arr[0]#*.}|g" /etc/nginx/sites-available/$i
         ln -sf /etc/nginx/sites-available/$i /etc/nginx/sites-enabled/
         sed -i -r 's/(listen .*443)/\1;#/g; s/(ssl_(certificate|certificate_key|trusted_certificate) )/#;#\1/g' /etc/nginx/sites-available/$i
     done
