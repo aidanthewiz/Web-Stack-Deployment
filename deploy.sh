@@ -53,7 +53,7 @@ lemp () {
     add-apt-repository ppa:certbot/certbot -y
     apt update
     apt full-upgrade -y
-    apt install build-essential nginx certbot checkinstall libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.4-fpm php7.4-common php7.4-cli php7.4-gd php7.4-zip php7.4-mbstring php7.4-xml php7.4-xmlrpc php7.4-soap php7.4-intl php7.4-mysql php7.4-curl composer -y
+    apt install build-essential nginx certbot libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.4-fpm php7.4-common php7.4-cli php7.4-gd php7.4-zip php7.4-mbstring php7.4-xml php7.4-xmlrpc php7.4-soap php7.4-intl php7.4-mysql php7.4-curl composer -y
     apt remove *nginx* -y
     NGINX_VERSION=1.16.1
     wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz --directory-prefix=/usr/local/src/
