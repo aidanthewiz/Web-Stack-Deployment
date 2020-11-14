@@ -13,6 +13,8 @@ fi
 apt update
 apt full-upgrade -y
 apt autoremove -y
+snap install core
+snap refresh core
 
 # Ask to enable firewall and allow OpenSSH
 echo "Would you like to enable ufw (firewall) and allow OpenSSH?"
@@ -50,23 +52,16 @@ done
 
 lemp () {
     add-apt-repository ppa:ondrej/php -y
-    add-apt-repository ppa:certbot/certbot -y
     apt update
     apt full-upgrade -y
-    apt install build-essential nginx certbot libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.4-fpm php7.4-common php7.4-cli php7.4-gd php7.4-zip php7.4-mbstring php7.4-xml php7.4-xmlrpc php7.4-soap php7.4-intl php7.4-mysql php7.4-curl composer -y
+    apt install build-essential nginx libpcre3 libpcre3-dev zlib1g-dev unzip uuid-dev libssl-dev libxslt1-dev libxml2-dev libgeoip-dev libgoogle-perftools-dev libperl-dev php7.4-fpm php7.4-common php7.4-cli php7.4-gd php7.4-zip php7.4-mbstring php7.4-xml php7.4-xmlrpc php7.4-soap php7.4-intl php7.4-mysql php7.4-curl composer -y
+    snap install --classic certbot
     apt remove *nginx* -y
-    NGINX_VERSION=1.16.1
+    NGINX_VERSION=1.18.0
     wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz --directory-prefix=/usr/local/src/
     tar -xzvf /usr/local/src/nginx-* --directory=/usr/local/src/
     git clone --recursive https://github.com/google/ngx_brotli.git /usr/local/src/ngx_brotli
-    # Pagespeed START
-    NPS_VERSION=1.13.35.2
-    wget https://github.com/apache/incubator-pagespeed-ngx/archive/v${NPS_VERSION}-stable.zip --directory-prefix=/usr/local/src/
-    unzip /usr/local/src/v${NPS_VERSION}-stable.zip -d /usr/local/src/
-    wget https://www.modpagespeed.com/release_archive/${NPS_VERSION}/psol-${NPS_VERSION}-x64.tar.gz --directory-prefix=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable/
-    tar -xzvf /usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable/psol-${NPS_VERSION}-x64.tar.gz --directory=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable/
-    # Pagespeed END
-    (cd /usr/local/src/nginx-${NGINX_VERSION}/ && ./configure --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/run/nginx.pid --prefix=/usr/share/nginx --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-threads --with-pcre-jit --with-http_v2_module --with-http_ssl_module --with-stream=dynamic --with-stream_ssl_module --with-mail=dynamic --with-mail_ssl_module --add-module=/usr/local/src/ngx_brotli --add-module=/usr/local/src/incubator-pagespeed-ngx-${NPS_VERSION}-stable)
+    (cd /usr/local/src/nginx-${NGINX_VERSION}/ && ./configure --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/run/nginx.pid --prefix=/usr/share/nginx --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-threads --with-pcre-jit --with-http_v2_module --with-http_ssl_module --with-stream=dynamic --with-stream_ssl_module --with-mail=dynamic --with-mail_ssl_module --add-module=/usr/local/src/ngx_brotli)
     make --directory=/usr/local/src/nginx-${NGINX_VERSION}/
     make install --directory=/usr/local/src/nginx-${NGINX_VERSION}/
     apt-mark hold nginx*
